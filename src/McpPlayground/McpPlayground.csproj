@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <WarningsAsErrors>nullable</WarningsAsErrors>
+        <PackageId>McpPlayground</PackageId>
+        <PackageVersion>1.0.0</PackageVersion>
+        <Version>1.0.0</Version>
+        <Authors>Alim Iusufov</Authors>
+        <Copyright>Copyright (c) 2026 Alim Iusufov</Copyright>
+        <Description>Swagger-like playground for MCP servers hosted in ASP.NET Core: one line (app.MapMcpPlayground()) serves a page that connects with your key, lists the tools, builds a form from each tool's input schema, calls it and shows the result. One embedded HTML page, no dependencies beyond ASP.NET Core, independent of the MCP SDK and its version.</Description>
+        <PackageTags>mcp;model-context-protocol;aspnetcore;playground;inspector;swagger;ui</PackageTags>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
+        <PackageProjectUrl>https://github.com/alim-tg/mcp-playground</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/alim-tg/mcp-playground</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PublishRepositoryUrl>true</PublishRepositoryUrl>
+        <EmbedUntrackedSources>true</EmbedUntrackedSources>
+        <IncludeSymbols>true</IncludeSymbols>
+        <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+        <Deterministic>true</Deterministic>
+        <ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Assets\playground.html" LogicalName="McpPlayground.playground.html" />
+        <None Include="..\..\README.md" Pack="true" PackagePath="\" />
+    </ItemGroup>
+
+</Project>

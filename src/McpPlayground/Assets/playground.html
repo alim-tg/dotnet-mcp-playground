@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>{{TITLE}}</title>
+<style nonce="{{NONCE}}">
+:root{
+  --bg:#f6f6fa;--glow-a:rgba(109,92,255,.13);--glow-b:rgba(59,130,246,.09);--header:rgba(246,246,250,.78);
+  --surface:#fff;--surface-2:#f1f2f7;--surface-3:#e9eaf2;--border:#e3e4ec;--border-strong:#cfd2df;
+  --text:#14151b;--muted:#5d6273;--faint:#8e93a3;
+  --accent:#6d5cff;--accent-2:#3b82f6;--accent-soft:rgba(109,92,255,.12);--accent-text:#5a48f0;--on-accent:#fff;
+  --ok:#15a34a;--ok-soft:rgba(21,163,74,.12);--err:#dc2626;--err-soft:rgba(220,38,38,.1);--warn:#c77c02;--warn-soft:rgba(217,119,6,.12);
+  --code-bg:#0e1016;--code-border:#1d2130;--code-text:#e4e7f0;--t-k:#8ab4ff;--t-s:#9be29b;--t-n:#ffb86b;--t-l:#d4a5ff;
+  --shadow:0 1px 2px rgba(17,19,30,.04),0 10px 30px -12px rgba(17,19,30,.12);
+  --ring:0 0 0 4px var(--accent-soft);
+  --radius:14px;--radius-s:9px;
+  --sans:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono","Cascadia Code",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#09090d;--glow-a:rgba(124,99,255,.2);--glow-b:rgba(59,130,246,.12);--header:rgba(9,9,13,.72);
+  --surface:#111219;--surface-2:#171922;--surface-3:#1f2230;--border:#22252f;--border-strong:#30343f;
+  --text:#ecedf3;--muted:#9a9fb0;--faint:#686d7c;
+  --accent:#8b7bff;--accent-2:#5b9bff;--accent-soft:rgba(139,123,255,.18);--accent-text:#b1a6ff;
+  --ok:#3fdc85;--ok-soft:rgba(63,220,133,.13);--err:#ff6b6b;--err-soft:rgba(255,107,107,.13);--warn:#ffbe55;--warn-soft:rgba(255,190,85,.13);
+  --code-bg:#0a0b10;--code-border:#1c1f2a;
+  --shadow:inset 0 1px 0 rgba(255,255,255,.03),0 18px 40px -20px rgba(0,0,0,.7);
+}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{min-height:100vh;color:var(--text);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased;
+  background:radial-gradient(900px 480px at 0% -10%,var(--glow-a),transparent 65%),radial-gradient(800px 420px at 100% -5%,var(--glow-b),transparent 60%),var(--bg);background-attachment:fixed}
+svg{flex:none}
+button,input,select,textarea{font:inherit;color:inherit}
+::selection{background:var(--accent-soft)}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:99px;border:3px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-track{background:transparent}
+
+.top{position:sticky;top:0;z-index:10;display:flex;align-items:center;gap:16px 24px;flex-wrap:wrap;justify-content:space-between;padding:12px 24px;background:var(--header);backdrop-filter:saturate(1.6) blur(14px);-webkit-backdrop-filter:saturate(1.6) blur(14px);border-bottom:1px solid var(--border)}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand-text{min-width:0}
+[hidden]{display:none!important}
+.logo{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 6px 20px -6px var(--accent)}
+h1{font-size:15px;font-weight:650;letter-spacing:-.01em;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sub{color:var(--muted);font-size:12.5px;white-space:pre-wrap}
+.conn{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0}
+.field-icon{position:relative;display:flex;align-items:center}
+.field-icon svg{position:absolute;left:11px;color:var(--faint);pointer-events:none}
+.field-icon input{padding-left:34px}
+.keybox input{width:300px;font-family:var(--mono);letter-spacing:.04em}
+
+input,select,textarea{width:100%;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-s);padding:8px 11px;min-height:38px;transition:border-color .15s,box-shadow .15s,background .15s}
+input::placeholder,textarea::placeholder{color:var(--faint)}
+input:hover,select:hover,textarea:hover{border-color:var(--border-strong)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:var(--ring)}
+select{appearance:none;padding-right:34px;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 17px) 16px,calc(100% - 12px) 16px;background-size:5px 5px;background-repeat:no-repeat}
+textarea{font:12.5px/1.55 var(--mono);min-height:84px;resize:vertical}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:38px;padding:0 14px;border-radius:var(--radius-s);border:1px solid var(--border);background:var(--surface-2);font-weight:550;cursor:pointer;white-space:nowrap;transition:background .15s,border-color .15s,transform .05s,filter .15s,box-shadow .15s}
+.btn:hover{border-color:var(--border-strong);background:var(--surface-3)}
+.btn:active{transform:translateY(1px)}
+.btn:focus-visible{outline:none;box-shadow:var(--ring);border-color:var(--accent)}
+.btn:disabled{opacity:.55;cursor:default;transform:none}
+.btn.primary{border-color:transparent;color:var(--on-accent);background:linear-gradient(135deg,var(--accent),var(--accent-2));box-shadow:0 8px 22px -10px var(--accent)}
+.btn.primary:hover{filter:brightness(1.08)}
+.btn.ghost{background:transparent;border-color:transparent;color:var(--muted)}
+.btn.ghost:hover{background:var(--surface-2);color:var(--text)}
+.btn.sm{min-height:30px;padding:0 10px;font-size:12.5px}
+kbd{font:11px var(--mono);padding:1px 6px;border-radius:6px;border:1px solid var(--border-strong);border-bottom-width:2px;color:var(--muted);background:var(--surface)}
+.btn.primary kbd{background:rgba(255,255,255,.16);border-color:rgba(255,255,255,.28);color:#fff}
+
+.status{display:inline-flex;align-items:center;gap:8px;max-width:440px;padding:5px 12px;border-radius:99px;font-size:12.5px;background:var(--surface-2);border:1px solid var(--border);color:var(--muted)}
+.status span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.status .dot{width:7px;height:7px;border-radius:50%;background:var(--faint);flex:none}
+.status.ok{color:var(--text)}
+.status.ok .dot{background:var(--ok);box-shadow:0 0 0 0 var(--ok);animation:pulse 2.4s infinite}
+.status.err{background:var(--err-soft);border-color:transparent;color:var(--err)}
+.status.err .dot{background:var(--err)}
+.status.busy .dot{background:var(--accent);animation:blink 1s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--ok) 60%,transparent)}70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}
+@keyframes blink{50%{opacity:.3}}
+
+main{display:grid;grid-template-columns:300px minmax(0,1fr);gap:20px;max-width:1480px;margin:0 auto;padding:20px 24px 40px;align-items:start}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+.side{position:sticky;top:78px;padding:12px;display:flex;flex-direction:column;gap:10px;max-height:calc(100vh - 98px)}
+.nav{width:100%;justify-content:flex-start}
+.nav[aria-current=true]{background:var(--accent-soft);border-color:transparent;color:var(--accent-text)}
+.side-head{display:flex;align-items:center;justify-content:space-between;padding:4px 4px 0;font-size:11.5px;font-weight:650;letter-spacing:.07em;text-transform:uppercase;color:var(--faint)}
+.count{font:600 11px var(--mono);letter-spacing:0;padding:1px 8px;border-radius:99px;background:var(--surface-2);color:var(--muted)}
+.search kbd{position:absolute;right:9px}
+#tools{list-style:none;margin:0;padding:0;overflow:auto;min-height:0;display:flex;flex-direction:column;gap:2px}
+.tool{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;width:100%;text-align:left;border:1px solid transparent;border-radius:10px;padding:8px 10px;background:none;cursor:pointer;transition:background .12s,border-color .12s}
+.tool:hover{background:var(--surface-2)}
+.tool:focus-visible{outline:none;box-shadow:var(--ring)}
+.tool[aria-current=true]{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 30%,transparent)}
+.tool[aria-current=true] .tname{color:var(--accent-text)}
+.tdot{grid-row:span 2;width:8px;height:8px;border-radius:50%;margin-top:6px;background:var(--accent-2)}
+.tdot.ro{background:var(--ok)}
+.tdot.danger{background:var(--err)}
+.tname{font:600 12.5px var(--mono);word-break:break-all}
+.tdesc{color:var(--muted);font-size:12px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.none{color:var(--faint);font-size:12.5px;padding:10px 6px}
+
+#view{padding:24px 26px;min-width:0}
+.eyebrow{font-size:11.5px;font-weight:650;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);margin:0 0 6px}
+h2{font:650 21px/1.25 var(--mono);letter-spacing:-.01em;margin:0;word-break:break-all}
+h3{font-size:11.5px;font-weight:650;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);margin:26px 0 10px}
+.desc{white-space:pre-wrap;color:var(--muted);margin:12px 0 0;max-width:90ch}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px}
+.chip{display:inline-flex;align-items:center;gap:6px;border-radius:99px;padding:2px 10px;font-size:12px;font-weight:550;background:var(--surface-2);color:var(--muted);border:1px solid var(--border)}
+.chip.ok{background:var(--ok-soft);color:var(--ok);border-color:transparent}
+.chip.err{background:var(--err-soft);color:var(--err);border-color:transparent}
+.chip.accent{background:var(--accent-soft);color:var(--accent-text);border-color:transparent}
+.divider{height:1px;background:var(--border);margin:22px 0}
+
+.fields{display:grid;gap:16px}
+.field label{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px}
+.fname{font:600 13px var(--mono)}
+.ftype{font:500 11px var(--mono);padding:1px 7px;border-radius:6px;background:var(--surface-2);color:var(--muted);border:1px solid var(--border)}
+.freq{font-size:11px;font-weight:650;padding:1px 7px;border-radius:6px;background:var(--err-soft);color:var(--err)}
+.hint{color:var(--muted);font-size:12.5px;margin:0 0 7px;white-space:pre-wrap}
+.ferr{color:var(--err);font-size:12px;margin-top:5px}
+.field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--err);box-shadow:0 0 0 4px var(--err-soft)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:22px}
+.spacer{flex:1}
+
+.result{margin-top:24px;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;background:var(--surface-2)}
+.rhead{display:flex;gap:10px;align-items:center;flex-wrap:wrap;padding:10px 12px 10px 14px;border-bottom:1px solid var(--border)}
+.pill{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:650;padding:2px 10px;border-radius:99px}
+.pill::before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
+.pill.ok{background:var(--ok-soft);color:var(--ok)}
+.pill.err{background:var(--err-soft);color:var(--err)}
+.pill.busy{background:var(--accent-soft);color:var(--accent-text)}
+.pill.busy::before{animation:blink 1s infinite}
+.meta{font:12px var(--mono);color:var(--muted)}
+.rbody{padding:12px}
+.code{margin:0;background:var(--code-bg);color:var(--code-text);border:1px solid var(--code-border);border-radius:11px;padding:14px 16px;overflow:auto;max-height:68vh;font:12.5px/1.6 var(--mono);white-space:pre-wrap;word-break:break-word;tab-size:2}
+.code+.code{margin-top:10px}
+.t-k{color:var(--t-k)}.t-s{color:var(--t-s)}.t-n{color:var(--t-n)}.t-l{color:var(--t-l)}
+img.content{max-width:100%;border-radius:10px;display:block}
+details{margin-top:10px}
+details>summary{list-style:none;cursor:pointer;display:inline-flex;align-items:center;gap:7px;color:var(--muted);font-size:12.5px;font-weight:550;padding:4px 2px;border-radius:6px}
+details>summary::-webkit-details-marker{display:none}
+details>summary::before{content:"";width:6px;height:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:rotate(-45deg);transition:transform .15s}
+details[open]>summary::before{transform:rotate(45deg)}
+details>summary:hover{color:var(--text)}
+details>.code{margin-top:6px}
+.panel-extra{margin-top:22px;display:flex;flex-direction:column;gap:2px}
+
+.empty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:64px 16px;color:var(--muted)}
+.empty .orb{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;color:var(--accent-text);background:var(--accent-soft)}
+.empty strong{color:var(--text);font-size:15px}
+.empty .code{max-width:640px;width:100%;text-align:left}
+.endpoint{display:flex;gap:8px;align-items:center}
+.endpoint code{flex:1;min-width:0;font:12.5px var(--mono);padding:9px 12px;border-radius:var(--radius-s);background:var(--surface-2);border:1px solid var(--border);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.instructions{white-space:pre-wrap;color:var(--muted);padding:14px 16px;border-radius:var(--radius-s);background:var(--surface-2);border:1px solid var(--border);max-width:100ch}
+
+@media (max-width:860px){
+  .top{padding:10px 16px}
+  .conn,.keybox,.keybox input{width:100%}
+  .conn .btn{flex:1}
+  main{grid-template-columns:1fr;padding:16px}
+  .side{position:static;max-height:none}
+  #tools{max-height:40vh}
+  #view{padding:18px 16px}
+  .kbd-hint{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <div class="logo" aria-hidden="true">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 3.5 7v10l8.5 4.5 8.5-4.5V7z"/><path d="m3.5 7 8.5 4.5L20.5 7M12 11.5v10"/></svg>
+    </div>
+    <div class="brand-text">
+      <h1 id="title"></h1>
+      <div class="sub" id="subtitle" hidden></div>
+    </div>
+  </div>
+  <form class="conn" id="connect-form">
+    <div class="field-icon keybox" id="keybox">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.8-9.8M17 6l3 3M14.5 8.5l2 2"/></svg>
+      <input id="key" type="password" autocomplete="off" spellcheck="false" placeholder="Paste your key" aria-label="Key">
+    </div>
+    <button type="submit" class="btn primary" id="connect">Connect</button>
+    <div class="status" id="status" role="status" hidden><span class="dot"></span><span id="status-text"></span></div>
+  </form>
+</header>
+<main>
+  <aside class="side card">
+    <button type="button" class="btn nav" id="overview" hidden>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg>
+      Server
+    </button>
+    <div class="side-head"><span>Tools</span><span class="count" id="count">0</span></div>
+    <div class="field-icon search">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+      <input id="filter" type="search" placeholder="Filter tools" aria-label="Filter tools">
+      <kbd>/</kbd>
+    </div>
+    <ul id="tools"></ul>
+  </aside>
+  <section class="card" id="view" aria-live="polite"></section>
+</main>
+<script type="application/json" id="mcp-playground-config">{{CONFIG}}</script>
+<script nonce="{{NONCE}}">
+(() => {
+  'use strict';
+
+  const cfg = JSON.parse(document.getElementById('mcp-playground-config').textContent);
+  const $ = id => document.getElementById(id);
+  const mount = (node, ...children) => node.replaceChildren(...children.flat(Infinity).filter(c => c !== null && c !== undefined && c !== false));
+  const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+
+  const el = (tag, props, ...children) => {
+    const node = document.createElement(tag);
+    for (const [k, v] of Object.entries(props || {})) {
+      if (v === undefined || v === null || v === false) continue;
+      if (k === 'class') node.className = v;
+      else if (k === 'text') node.textContent = v;
+      else if (k.startsWith('on')) node.addEventListener(k.slice(2), v);
+      else if (k in node && typeof v !== 'string') node[k] = v;
+      else node.setAttribute(k, v === true ? '' : v);
+    }
+    for (const c of children.flat(Infinity)) {
+      if (c !== null && c !== undefined && c !== false) node.append(c instanceof Node ? c : String(c));
+    }
+    return node;
+  };
+
+  const svg = (paths, size) => {
+    const ns = 'http://www.w3.org/2000/svg';
+    const s = document.createElementNS(ns, 'svg');
+    s.setAttribute('width', size || 16);
+    s.setAttribute('height', size || 16);
+    s.setAttribute('viewBox', '0 0 24 24');
+    s.setAttribute('fill', 'none');
+    s.setAttribute('stroke', 'currentColor');
+    s.setAttribute('stroke-width', '2');
+    s.setAttribute('stroke-linecap', 'round');
+    s.setAttribute('stroke-linejoin', 'round');
+    s.setAttribute('aria-hidden', 'true');
+    for (const d of paths) {
+      const p = document.createElementNS(ns, 'path');
+      p.setAttribute('d', d);
+      s.append(p);
+    }
+    return s;
+  };
+  const icons = {
+    play: () => svg(['M7 4.5v15l12-7.5z'], 14),
+    copy: () => svg(['M9 9h10v10H9z', 'M5 15V5h10'], 14),
+    plug: () => svg(['M9 7V3M15 7V3', 'M6 7h12v4a6 6 0 0 1-12 0z', 'M12 17v4'], 24),
+    alert: () => svg(['M12 3 2 21h20z', 'M12 10v4M12 17.5h.01'], 24),
+    tool: () => svg(['M14.5 6.5a4 4 0 0 0 5 5l-9 9a2.1 2.1 0 0 1-3-3l9-9a4 4 0 0 0-2-2z'], 24)
+  };
+
+  const store = kind => { try { return kind === 'local' ? window.localStorage : kind === 'session' ? window.sessionStorage : null; } catch { return null; } };
+  const keyStore = store(cfg.keyStorage);
+  const argStore = store('session');
+  const read = (s, k) => { try { return s ? s.getItem(k) : null; } catch { return null; } };
+  const write = (s, k, v) => { try { if (s) { v === null ? s.removeItem(k) : s.setItem(k, v); } } catch { } };
+  const keyName = 'mcp-playground:key:' + cfg.mcpUrl;
+  const argName = tool => 'mcp-playground:args:' + cfg.mcpUrl + ':' + tool;
+
+  const state = { nextId: 1, sessionId: null, protocolVersion: null, server: null, tools: [], selected: null };
+
+  class RpcError extends Error {
+    constructor(message, status) { super(message); this.status = status; }
+  }
+
+  function requestHeaders() {
+    const h = { 'Content-Type': 'application/json', 'Accept': 'application/json, text/event-stream' };
+    const key = $('key').value.trim();
+    if (cfg.authHeaderName && key) h[cfg.authHeaderName] = cfg.authScheme ? cfg.authScheme + ' ' + key : key;
+    if (state.sessionId) h['Mcp-Session-Id'] = state.sessionId;
+    if (state.protocolVersion) h['MCP-Protocol-Version'] = state.protocolVersion;
+    return h;
+  }
+
+  function parseMessages(text, contentType) {
+    if ((contentType || '').includes('text/event-stream')) {
+      const out = [];
+      for (const block of text.split(/\r?\n\r?\n/)) {
+        const data = block.split(/\r?\n/).filter(l => l.startsWith('data:')).map(l => l.slice(5).replace(/^ /, '')).join('\n');
+        if (!data) continue;
+        try { out.push(JSON.parse(data)); } catch { }
+      }
+      return out;
+    }
+    try { const v = JSON.parse(text); return Array.isArray(v) ? v : [v]; } catch { return []; }
+  }
+
+  function describeFailure(messages, text) {
+    const first = messages[0];
+    if (first && typeof first === 'object') {
+      const d = first.error?.message || first.error || first.detail || first.title || first.message;
+      if (d) return typeof d === 'string' ? d : JSON.stringify(d);
+    }
+    return text ? text.slice(0, 500) : '';
+  }
+
+  async function send(method, params, notification) {
+    const body = { jsonrpc: '2.0', method };
+    if (params !== undefined) body.params = params;
+    if (!notification) body.id = state.nextId++;
+    const started = performance.now();
+    let res;
+    try {
+      res = await fetch(cfg.mcpUrl, { method: 'POST', headers: requestHeaders(), body: JSON.stringify(body), credentials: 'same-origin' });
+    } catch (e) {
+      throw new RpcError('Network error: ' + e.message, 0);
+    }
+    const sid = res.headers.get('Mcp-Session-Id');
+    if (sid) state.sessionId = sid;
+    const text = await res.text();
+    const ms = Math.round(performance.now() - started);
+    if (notification) return { status: res.status, ms };
+    const messages = parseMessages(text, res.headers.get('Content-Type'));
+    const message = messages.find(m => m && m.jsonrpc === '2.0' && m.id === body.id);
+    if (!message) {
+      const detail = describeFailure(messages, text);
+      throw new RpcError('HTTP ' + res.status + (detail ? ': ' + detail : ''), res.status);
+    }
+    return { status: res.status, ms, bytes: new Blob([text]).size, message };
+  }
+
+  function rpcResult(r) {
+    if (r.message.error) throw new RpcError(r.message.error.message || JSON.stringify(r.message.error), r.status);
+    return r.message.result || {};
+  }
+
+  function setStatus(text, kind) {
+    const s = $('status');
+    s.hidden = !text;
+    s.className = 'status' + (kind ? ' ' + kind : '');
+    s.title = text || '';
+    $('status-text').textContent = text || '';
+  }
+
+  const serverName = () => {
+    const info = state.server?.serverInfo || {};
+    return [info.title || info.name, info.version].filter(Boolean).join(' ');
+  };
+
+  async function connect() {
+    $('connect').disabled = true;
+    setStatus('Connecting…', 'busy');
+    state.sessionId = null;
+    state.protocolVersion = null;
+    try {
+      const init = rpcResult(await send('initialize', {
+        protocolVersion: cfg.protocolVersion,
+        capabilities: {},
+        clientInfo: { name: 'mcp-playground', version: '1.0.0' }
+      }));
+      state.server = init;
+      state.protocolVersion = init.protocolVersion || cfg.protocolVersion;
+      await send('notifications/initialized', undefined, true).catch(() => { });
+      const tools = [];
+      let cursor;
+      do {
+        const page = rpcResult(await send('tools/list', cursor ? { cursor } : {}));
+        tools.push(...(page.tools || []));
+        cursor = page.nextCursor;
+      } while (cursor);
+      state.tools = tools;
+      write(keyStore, keyName, $('key').value.trim() || null);
+      setStatus(serverName() || 'Connected', 'ok');
+      $('connect').textContent = 'Reconnect';
+      $('overview').hidden = false;
+      const wanted = decodeURIComponent((location.hash.match(/^#tool=(.+)$/) || [])[1] || '');
+      const tool = state.tools.find(t => t.name === (state.selected?.name || wanted));
+      tool ? select(tool) : renderOverview();
+    } catch (e) {
+      state.server = null;
+      state.tools = [];
+      $('overview').hidden = true;
+      setStatus(e.message, 'err');
+      renderTools();
+      renderEmpty(icons.alert(), e.status === 401 || e.status === 403 ? 'The server rejected the key' : 'Could not connect', null, e.message);
+    } finally {
+      $('connect').disabled = false;
+    }
+  }
+
+  function toolKind(t) {
+    const a = t.annotations || {};
+    if (a.readOnlyHint === true) return { cls: 'ro', label: 'Read-only' };
+    if (a.destructiveHint === true) return { cls: 'danger', label: 'Destructive' };
+    return { cls: '', label: 'May change data' };
+  }
+
+  function renderTools() {
+    const q = $('filter').value.trim().toLowerCase();
+    const shown = state.tools.filter(t => !q || t.name.toLowerCase().includes(q) || (t.title || '').toLowerCase().includes(q) || (t.description || '').toLowerCase().includes(q));
+    $('count').textContent = q ? shown.length + '/' + state.tools.length : String(state.tools.length);
+    $('overview').setAttribute('aria-current', state.server && !state.selected ? 'true' : 'false');
+    mount($('tools'), shown.length || !state.tools.length
+      ? shown.map(t => {
+        const kind = toolKind(t);
+        return el('li', null, el('button', {
+          type: 'button',
+          class: 'tool',
+          title: kind.label,
+          'aria-current': state.selected?.name === t.name ? 'true' : 'false',
+          onclick: () => select(t)
+        }, el('span', { class: 'tdot ' + kind.cls }), el('span', { class: 'tname', text: t.name }), t.description ? el('span', { class: 'tdesc', text: t.description }) : null));
+      })
+      : el('li', { class: 'none', text: 'No tools match “' + q + '”.' }));
+  }
+
+  function renderEmpty(icon, title, text, detail) {
+    mount($('view'), el('div', { class: 'empty' },
+      el('div', { class: 'orb' }, icon),
+      el('strong', { text: title }),
+      text ? el('div', { text }) : null,
+      detail ? el('pre', { class: 'code', text: detail }) : null));
+  }
+
+  function renderOverview() {
+    state.selected = null;
+    history.replaceState(null, '', location.pathname + location.search);
+    renderTools();
+    const s = state.server || {};
+    const caps = Object.keys(s.capabilities || {});
+    const endpoint = new URL(cfg.mcpUrl, location.href).href;
+    mount($('view'),
+      el('div', { class: 'eyebrow', text: 'Server' }),
+      el('h2', { text: serverName() || 'MCP server' }),
+      el('div', { class: 'chips' },
+        el('span', { class: 'chip accent', text: 'MCP ' + (s.protocolVersion || '?') }),
+        el('span', { class: 'chip', text: state.tools.length + (state.tools.length === 1 ? ' tool' : ' tools') }),
+        caps.map(c => el('span', { class: 'chip', text: c }))),
+      s.instructions ? [el('h3', { text: 'Instructions' }), el('div', { class: 'instructions', text: s.instructions })] : null,
+      el('h3', { text: 'Endpoint' }),
+      el('div', { class: 'endpoint' }, el('code', { text: endpoint, title: endpoint }), copyButton(() => endpoint)),
+      state.tools.length ? null : el('div', { class: 'empty' }, el('div', { class: 'orb' }, icons.tool()), el('div', { text: 'This server exposes no tools.' })));
+  }
+
+  function resolve(schema) {
+    if (!schema || typeof schema !== 'object') return {};
+    const alt = schema.anyOf || schema.oneOf;
+    if (!schema.type && Array.isArray(alt)) {
+      const variant = alt.find(x => x && x.type !== 'null');
+      if (variant) return Object.assign({}, variant, { description: schema.description ?? variant.description, default: schema.default ?? variant.default });
+    }
+    return schema;
+  }
+
+  function typeOf(schema) {
+    const s = resolve(schema);
+    let t = Array.isArray(s.type) ? s.type.find(x => x !== 'null') : s.type;
+    if (Array.isArray(s.enum) && t !== 'array') return 'enum';
+    if (!t) t = s.properties ? 'object' : s.items ? 'array' : 'any';
+    return t;
+  }
+
+  function kindOf(schema) {
+    const t = typeOf(schema);
+    if (t === 'array') {
+      const it = typeOf(resolve(schema).items);
+      return ['string', 'integer', 'number', 'enum'].includes(it) ? 'lines' : 'json';
+    }
+    if (['enum', 'boolean', 'integer', 'number', 'string'].includes(t)) return t;
+    return 'json';
+  }
+
+  function typeLabel(schema) {
+    const s = resolve(schema);
+    const t = typeOf(s);
+    if (t === 'array') return typeOf(s.items) + '[]';
+    return s.format ? t + ' · ' + s.format : t;
+  }
+
+  function buildField(name, schema, required) {
+    const s = resolve(schema);
+    const kind = kindOf(s);
+    const id = 'f-' + name;
+    const placeholder = s.default !== undefined && s.default !== null
+      ? 'Default: ' + JSON.stringify(s.default)
+      : Array.isArray(s.examples) && s.examples.length ? 'e.g. ' + JSON.stringify(s.examples[0]) : '';
+    let input;
+    if (kind === 'enum' || kind === 'boolean') {
+      const values = kind === 'boolean' ? [true, false] : s.enum.filter(v => v !== null);
+      input = el('select', { id }, el('option', { value: '', text: required ? 'Choose…' : 'Not set' }), values.map(v => el('option', { value: String(v), text: String(v) })));
+    } else if (kind === 'integer' || kind === 'number') {
+      input = el('input', { id, type: 'number', step: kind === 'integer' ? '1' : 'any', min: s.minimum, max: s.maximum, placeholder });
+    } else if (kind === 'lines') {
+      input = el('textarea', { id, rows: 3, placeholder: placeholder || 'One value per line', spellcheck: 'false' });
+    } else if (kind === 'json') {
+      input = el('textarea', { id, rows: 5, placeholder: placeholder || (typeOf(s) === 'array' ? '[ ]' : '{ }'), spellcheck: 'false' });
+    } else if (s.format === 'date') {
+      input = el('input', { id, type: 'date' });
+    } else if ((s.maxLength || 0) > 200) {
+      input = el('textarea', { id, rows: 3, placeholder });
+    } else {
+      input = el('input', { id, type: 'text', placeholder: placeholder || (s.format === 'date-time' ? '2026-01-31T00:00:00Z' : ''), spellcheck: 'false' });
+    }
+    const error = el('div', { class: 'ferr', hidden: true });
+    const limits = [
+      s.minimum !== undefined ? 'min ' + s.minimum : '',
+      s.maximum !== undefined ? 'max ' + s.maximum : '',
+      s.minLength !== undefined ? 'min length ' + s.minLength : '',
+      s.maxLength !== undefined ? 'max length ' + s.maxLength : '',
+      s.maxItems !== undefined ? 'max ' + s.maxItems + ' items' : '',
+      s.pattern ? 'pattern ' + s.pattern : ''
+    ].filter(Boolean).join(' · ');
+    const hint = [s.description, kind === 'lines' ? 'One value per line.' : '', limits].filter(Boolean).join('\n');
+    const node = el('div', { class: 'field' },
+      el('label', { for: id },
+        el('span', { class: 'fname', text: name }),
+        el('span', { class: 'ftype', text: typeLabel(s) }),
+        required ? el('span', { class: 'freq', text: 'required' }) : null),
+      hint ? el('div', { class: 'hint', text: hint }) : null,
+      input, error);
+    return { name, schema: s, kind, required, input, error, node };
+  }
+
+  function readField(f) {
+    const raw = f.input.value;
+    if (raw === '' || (f.kind !== 'string' && raw.trim() === '')) return { skip: true };
+    switch (f.kind) {
+      case 'enum': return { value: f.schema.enum.find(v => String(v) === raw) };
+      case 'boolean': return { value: raw === 'true' };
+      case 'integer':
+      case 'number': {
+        const n = Number(raw);
+        if (!Number.isFinite(n) || (f.kind === 'integer' && !Number.isInteger(n))) throw new Error('Must be ' + (f.kind === 'integer' ? 'a whole number' : 'a number') + '.');
+        return { value: n };
+      }
+      case 'lines': {
+        const itemKind = typeOf(f.schema.items);
+        return {
+          value: raw.split(/\r?\n/).map(x => x.trim()).filter(Boolean).map(x => {
+            if (itemKind !== 'integer' && itemKind !== 'number') return x;
+            const n = Number(x);
+            if (!Number.isFinite(n) || (itemKind === 'integer' && !Number.isInteger(n))) throw new Error('"' + x + '" is not ' + (itemKind === 'integer' ? 'a whole number' : 'a number') + '.');
+            return n;
+          })
+        };
+      }
+      case 'json':
+        try { return { value: JSON.parse(raw) }; } catch (e) { throw new Error('Invalid JSON: ' + e.message); }
+      default: return { value: raw };
+    }
+  }
+
+  function fillField(f, value) {
+    if (value === undefined || value === null) { f.input.value = ''; return; }
+    if (f.kind === 'lines' && Array.isArray(value)) f.input.value = value.join('\n');
+    else if (f.kind === 'json' || typeof value === 'object') f.input.value = JSON.stringify(value, null, 2);
+    else f.input.value = String(value);
+  }
+
+  function setFieldError(f, message) {
+    f.error.textContent = message || '';
+    f.error.hidden = !message;
+    f.node.classList.toggle('invalid', !!message);
+  }
+
+  function select(tool) {
+    state.selected = tool;
+    history.replaceState(null, '', '#tool=' + encodeURIComponent(tool.name));
+    renderTools();
+
+    const schema = tool.inputSchema || {};
+    const required = new Set(schema.required || []);
+    const fields = Object.entries(schema.properties || {}).map(([n, s]) => buildField(n, s, required.has(n)));
+    const jsonBox = el('textarea', { rows: 14, spellcheck: 'false', hidden: true, 'aria-label': 'Arguments as JSON' });
+    const jsonError = el('div', { class: 'ferr', hidden: true });
+    const result = el('div', { class: 'result', hidden: true });
+    let jsonMode = fields.length === 0 && schema.type !== 'object';
+
+    const collect = () => {
+      if (jsonMode) {
+        jsonError.hidden = true;
+        const raw = jsonBox.value.trim();
+        if (!raw) return {};
+        try {
+          const v = JSON.parse(raw);
+          if (!v || typeof v !== 'object' || Array.isArray(v)) throw new Error('Arguments must be a JSON object.');
+          return v;
+        } catch (e) {
+          jsonError.textContent = e.message;
+          jsonError.hidden = false;
+          throw e;
+        }
+      }
+      const args = {};
+      let failed = null;
+      for (const f of fields) {
+        setFieldError(f, null);
+        try {
+          const r = readField(f);
+          if (r.skip) {
+            if (f.required) throw new Error('Required.');
+            continue;
+          }
+          args[f.name] = r.value;
+        } catch (e) {
+          setFieldError(f, e.message);
+          failed = failed || f;
+        }
+      }
+      if (failed) {
+        failed.input.focus();
+        throw new Error('Fix the highlighted fields.');
+      }
+      return args;
+    };
+
+    const fill = args => {
+      for (const f of fields) fillField(f, args ? args[f.name] : undefined);
+      jsonBox.value = JSON.stringify(args || {}, null, 2);
+    };
+
+    const formBox = el('div', { class: 'fields' }, fields.map(f => f.node));
+    const toggle = el('button', { type: 'button', class: 'btn' });
+    const applyMode = () => {
+      formBox.hidden = jsonMode;
+      jsonBox.hidden = !jsonMode;
+      jsonError.hidden = true;
+      toggle.textContent = jsonMode ? 'Edit as form' : 'Edit as JSON';
+      toggle.hidden = fields.length === 0;
+    };
+    toggle.addEventListener('click', () => {
+      try {
+        const args = collect();
+        if (jsonMode) fill(args);
+        else jsonBox.value = JSON.stringify(args, null, 2);
+        jsonMode = !jsonMode;
+        applyMode();
+      } catch { }
+    });
+
+    const callButton = el('button', { type: 'submit', class: 'btn primary' }, icons.play(), 'Call', el('kbd', { class: 'kbd-hint', text: (isMac ? '⌘' : 'Ctrl') + ' ↵' }));
+    const form = el('form', {
+      novalidate: true,
+      onkeydown: e => {
+        if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); form.requestSubmit(); }
+      },
+      onsubmit: async e => {
+        e.preventDefault();
+        if (callButton.disabled) return;
+        let args;
+        try { args = collect(); } catch { return; }
+        write(argStore, argName(tool.name), JSON.stringify(args));
+        callButton.disabled = true;
+        result.hidden = false;
+        mount(result, el('div', { class: 'rhead' }, el('span', { class: 'pill busy', text: 'Calling' }), el('span', { class: 'meta', text: tool.name })));
+        try {
+          renderResult(result, await send('tools/call', { name: tool.name, arguments: args }));
+        } catch (err) {
+          renderFailure(result, err);
+        } finally {
+          callButton.disabled = false;
+        }
+      }
+    },
+      fields.length ? el('h3', { text: 'Arguments' }) : null,
+      formBox, jsonBox, jsonError,
+      el('div', { class: 'actions' },
+        callButton, toggle, el('span', { class: 'spacer' }),
+        el('button', {
+          type: 'button',
+          class: 'btn ghost',
+          text: 'Reset',
+          onclick: () => { fill({}); write(argStore, argName(tool.name), null); fields.forEach(f => setFieldError(f, null)); jsonError.hidden = true; }
+        })));
+
+    const a = tool.annotations || {};
+    const kind = toolKind(tool);
+    const chips = [
+      el('span', { class: 'chip ' + (kind.cls === 'ro' ? 'ok' : kind.cls === 'danger' ? 'err' : ''), text: kind.label }),
+      a.idempotentHint === true ? el('span', { class: 'chip', text: 'Idempotent' }) : null,
+      a.openWorldHint === true ? el('span', { class: 'chip', text: 'Open world' }) : null,
+      el('span', { class: 'chip', text: fields.length ? fields.length + (fields.length === 1 ? ' argument' : ' arguments') : 'No arguments' })
+    ];
+
+    mount($('view'),
+      el('div', { class: 'eyebrow', text: tool.title || a.title || 'Tool' }),
+      el('h2', { text: tool.name }),
+      el('div', { class: 'chips' }, chips),
+      tool.description ? el('div', { class: 'desc', text: tool.description }) : null,
+      el('div', { class: 'divider' }),
+      form,
+      result,
+      el('div', { class: 'panel-extra' },
+        el('details', null, el('summary', { text: 'Input schema' }), codeBlock(JSON.stringify(schema))),
+        tool.outputSchema ? el('details', null, el('summary', { text: 'Output schema' }), codeBlock(JSON.stringify(tool.outputSchema))) : null));
+
+    let saved = null;
+    try { saved = JSON.parse(read(argStore, argName(tool.name)) || 'null'); } catch { }
+    fill(saved || {});
+    applyMode();
+  }
+
+  function pretty(text) {
+    const t = (text || '').trim();
+    if ((t.startsWith('{') || t.startsWith('[')) && t.length < 5000000) {
+      try { return { text: JSON.stringify(JSON.parse(t), null, 2), json: true }; } catch { }
+    }
+    return { text: text || '', json: false };
+  }
+
+  const TOKEN = /("(?:\\u[a-fA-F0-9]{4}|\\[^u]|[^\\"])*")(\s*:)?|\b(true|false|null)\b|(-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?)/g;
+
+  function codeBlock(text) {
+    const p = pretty(text);
+    const pre = el('pre', { class: 'code' });
+    if (!p.json || p.text.length > 400000) {
+      pre.textContent = p.text;
+      return pre;
+    }
+    let last = 0;
+    for (const m of p.text.matchAll(TOKEN)) {
+      if (m.index > last) pre.append(p.text.slice(last, m.index));
+      const cls = m[1] ? (m[2] ? 't-k' : 't-s') : m[3] ? 't-l' : 't-n';
+      pre.append(el('span', { class: cls, text: m[1] || m[0] }));
+      if (m[2]) pre.append(m[2]);
+      last = m.index + m[0].length;
+    }
+    pre.append(p.text.slice(last));
+    return pre;
+  }
+
+  function copyButton(getText) {
+    const b = el('button', { type: 'button', class: 'btn ghost sm' }, icons.copy(), el('span', { text: 'Copy' }));
+    b.addEventListener('click', async () => {
+      const label = b.lastChild;
+      try { await navigator.clipboard.writeText(getText()); label.textContent = 'Copied'; }
+      catch { label.textContent = 'Copy failed'; }
+      setTimeout(() => { label.textContent = 'Copy'; }, 1500);
+    });
+    return b;
+  }
+
+  function renderContent(item) {
+    switch (item.type) {
+      case 'text': return codeBlock(item.text);
+      case 'image': return el('img', { class: 'content', src: 'data:' + item.mimeType + ';base64,' + item.data, alt: 'Image result' });
+      case 'audio': return el('audio', { controls: true, src: 'data:' + item.mimeType + ';base64,' + item.data });
+      case 'resource': return codeBlock(item.resource && typeof item.resource.text === 'string' ? item.resource.text : JSON.stringify(item.resource));
+      default: return codeBlock(JSON.stringify(item));
+    }
+  }
+
+  function size(bytes) {
+    return bytes >= 1048576 ? (bytes / 1048576).toFixed(1) + ' MB' : bytes >= 1024 ? (bytes / 1024).toFixed(1) + ' KB' : bytes + ' B';
+  }
+
+  function renderResult(box, r) {
+    const msg = r.message;
+    const meta = r.ms + ' ms · HTTP ' + r.status + ' · ' + size(r.bytes);
+    const raw = el('details', null, el('summary', { text: 'Raw response' }), codeBlock(JSON.stringify(msg)));
+    if (msg.error) {
+      mount(box,
+        el('div', { class: 'rhead' }, el('span', { class: 'pill err', text: 'JSON-RPC error ' + (msg.error.code ?? '') }), el('span', { class: 'meta', text: meta })),
+        el('div', { class: 'rbody' }, codeBlock(msg.error.message + (msg.error.data !== undefined ? '\n\n' + JSON.stringify(msg.error.data, null, 2) : '')), raw));
+      return;
+    }
+    const res = msg.result || {};
+    const content = Array.isArray(res.content) ? res.content : [];
+    const primary = () => {
+      const t = content.find(c => c.type === 'text');
+      return t ? pretty(t.text).text : JSON.stringify(res, null, 2);
+    };
+    mount(box,
+      el('div', { class: 'rhead' },
+        el('span', { class: 'pill ' + (res.isError ? 'err' : 'ok'), text: res.isError ? 'Tool error' : 'Success' }),
+        el('span', { class: 'meta', text: meta }),
+        el('span', { class: 'spacer' }),
+        copyButton(primary)),
+      el('div', { class: 'rbody' },
+        content.map(renderContent),
+        res.structuredContent !== undefined ? el('details', { open: content.length === 0 }, el('summary', { text: 'Structured content' }), codeBlock(JSON.stringify(res.structuredContent))) : null,
+        raw));
+  }
+
+  function renderFailure(box, e) {
+    mount(box,
+      el('div', { class: 'rhead' }, el('span', { class: 'pill err', text: e.status ? 'HTTP ' + e.status : 'Failed' })),
+      el('div', { class: 'rbody' },
+        codeBlock(e.message),
+        e.status === 404 && state.sessionId ? el('div', { class: 'hint', text: 'The server session may have expired. Reconnect and try again.' }) : null));
+  }
+
+  document.title = cfg.title;
+  $('title').textContent = cfg.title;
+  if (cfg.description) { $('subtitle').textContent = cfg.description; $('subtitle').hidden = false; }
+  if (!cfg.authHeaderName) $('keybox').hidden = true;
+  $('key').value = read(keyStore, keyName) || '';
+  $('connect-form').addEventListener('submit', e => { e.preventDefault(); connect(); });
+  $('filter').addEventListener('input', renderTools);
+  $('filter').addEventListener('keydown', e => {
+    if (e.key === 'Escape') { $('filter').value = ''; renderTools(); $('filter').blur(); }
+    if (e.key === 'Enter') { e.preventDefault(); const first = $('tools').querySelector('.tool'); if (first) first.click(); }
+  });
+  $('overview').addEventListener('click', renderOverview);
+  document.addEventListener('keydown', e => {
+    const t = e.target;
+    const typing = t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement || t instanceof HTMLSelectElement;
+    if (e.key === '/' && !typing) { e.preventDefault(); $('filter').focus(); }
+  });
+  renderTools();
+  renderEmpty(icons.plug(), cfg.authHeaderName ? 'Connect to explore' : 'Connecting…', cfg.authHeaderName ? 'Paste your key above and press Connect to list the tools.' : null);
+  if (!cfg.authHeaderName || $('key').value) connect();
+  else $('key').focus();
+})();
+</script>
+</body>
+</html>
