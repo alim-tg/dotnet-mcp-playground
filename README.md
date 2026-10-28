@@ -88,6 +88,15 @@ A configure delegate passed after the section is applied on top of it.
 dotnet run --project samples/Sample.McpServer --urls http://localhost:5099
 ```
 
+## Releasing
+
+Push a tag `v<semver>` (for example `v1.1.0` or `v1.2.0-beta.1`). The `release` workflow builds, tests and packs that version, publishes it to nuget.org through [trusted publishing](https://learn.microsoft.com/nuget/nuget-org/trusted-publishing) and creates a GitHub release with the packages. One-time setup: a trusted publishing policy on nuget.org for this repository and `release.yml`, a `nuget` environment in the repository settings, and a repository variable `NUGET_USER` with the nuget.org account name.
+
+```
+git tag v1.1.0
+git push origin v1.1.0
+```
+
 ## License
 
 MIT, see [LICENSE](LICENSE).
