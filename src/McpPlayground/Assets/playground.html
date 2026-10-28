@@ -370,8 +370,9 @@ details>.code{margin-top:6px}
         cursor = page.nextCursor;
       } while (cursor);
       state.tools = tools;
-      write(keyStore, keyName, $('key').value.trim() || null);
-      setStatus(serverName() || 'Connected', 'ok');
+      const key = $('key').value.trim();
+      if (key) write(keyStore, keyName, key);
+      setStatus((serverName() || 'Connected') + (cfg.authHeaderName && !key ? ' · add a key to call tools' : ''), 'ok');
       $('connect').textContent = 'Reconnect';
       $('overview').hidden = false;
       const wanted = decodeURIComponent((location.hash.match(/^#tool=(.+)$/) || [])[1] || '');
@@ -381,9 +382,16 @@ details>.code{margin-top:6px}
       state.server = null;
       state.tools = [];
       $('overview').hidden = true;
-      setStatus(e.message, 'err');
       renderTools();
-      renderEmpty(icons.alert(), e.status === 401 || e.status === 403 ? 'The server rejected the key' : 'Could not connect', null, e.message);
+      const rejected = e.status === 401 || e.status === 403;
+      if (rejected && !$('key').value.trim()) {
+        setStatus('Key required', 'err');
+        renderEmpty(icons.plug(), 'This server needs a key to list its tools', 'Paste your key above and press Connect.');
+        $('key').focus();
+      } else {
+        setStatus(e.message, 'err');
+        renderEmpty(icons.alert(), rejected ? 'The server rejected the key' : 'Could not connect', null, e.message);
+      }
     } finally {
       $('connect').disabled = false;
     }
@@ -656,6 +664,11 @@ details>.code{margin-top:6px}
         mount(result, el('div', { class: 'rhead' }, el('span', { class: 'pill busy', text: 'Calling' }), el('span', { class: 'meta', text: tool.name })));
         try {
           renderResult(result, await send('tools/call', { name: tool.name, arguments: args }));
+          const key = $('key').value.trim();
+          if (key) {
+            write(keyStore, keyName, key);
+            setStatus(serverName() || 'Connected', 'ok');
+          }
         } catch (err) {
           renderFailure(result, err);
         } finally {
@@ -784,11 +797,17 @@ details>.code{margin-top:6px}
   }
 
   function renderFailure(box, e) {
+    const rejected = e.status === 401 || e.status === 403;
+    const hasKey = !!$('key').value.trim();
     mount(box,
-      el('div', { class: 'rhead' }, el('span', { class: 'pill err', text: e.status ? 'HTTP ' + e.status : 'Failed' })),
+      el('div', { class: 'rhead' }, el('span', { class: 'pill err', text: rejected && !hasKey ? 'Key required' : e.status ? 'HTTP ' + e.status : 'Failed' })),
       el('div', { class: 'rbody' },
+        rejected && cfg.authHeaderName
+          ? el('div', { class: 'hint', text: hasKey ? 'The server rejected this key. Check it and call again.' : 'Calling a tool needs a key. Paste it above and call again.' })
+          : null,
         codeBlock(e.message),
         e.status === 404 && state.sessionId ? el('div', { class: 'hint', text: 'The server session may have expired. Reconnect and try again.' }) : null));
+    if (rejected && cfg.authHeaderName) $('key').focus();
   }
 
   document.title = cfg.title;
@@ -809,9 +828,8 @@ details>.code{margin-top:6px}
     if (e.key === '/' && !typing) { e.preventDefault(); $('filter').focus(); }
   });
   renderTools();
-  renderEmpty(icons.plug(), cfg.authHeaderName ? 'Connect to explore' : 'Connecting…', cfg.authHeaderName ? 'Paste your key above and press Connect to list the tools.' : null);
-  if (!cfg.authHeaderName || $('key').value) connect();
-  else $('key').focus();
+  renderEmpty(icons.plug(), 'Connecting…', null);
+  connect();
 })();
 </script>
 </body>

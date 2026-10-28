@@ -1,8 +1,10 @@
 using System.ComponentModel;
+using System.Text.Json;
 using McpPlayground;
 using ModelContextProtocol.Server;
 
 const string sampleKey = "sample-key";
+string[] discoveryMethods = ["initialize", "notifications/initialized", "ping", "tools/list"];
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services
@@ -15,14 +17,35 @@ var app = builder.Build();
 app.Use(async (context, next) =>
 {
     var isMcp = context.Request.Path.StartsWithSegments("/mcp") && !context.Request.Path.StartsWithSegments("/mcp/ui");
-    if (isMcp && context.Request.Headers.Authorization != $"Bearer {sampleKey}")
+    var authorization = context.Request.Headers.Authorization.ToString();
+    if (!isMcp || authorization == $"Bearer {sampleKey}")
     {
-        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-        await context.Response.WriteAsJsonAsync(new { error = "Missing or unknown key." });
+        await next();
         return;
     }
 
-    await next();
+    if (authorization.Length == 0 && HttpMethods.IsPost(context.Request.Method))
+    {
+        context.Request.EnableBuffering();
+        try
+        {
+            using var body = await JsonDocument.ParseAsync(context.Request.Body);
+            if (body.RootElement.ValueKind == JsonValueKind.Object
+                && body.RootElement.TryGetProperty("method", out var method)
+                && discoveryMethods.Contains(method.GetString()))
+            {
+                context.Request.Body.Position = 0;
+                await next();
+                return;
+            }
+        }
+        catch (JsonException)
+        {
+        }
+    }
+
+    context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+    await context.Response.WriteAsJsonAsync(new { error = "Missing or unknown key. Listing the tools is open; calling a tool needs the key." });
 });
 
 app.MapMcp("/mcp");
