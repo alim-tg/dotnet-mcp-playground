@@ -14,8 +14,8 @@
         <PackageTags>mcp;model-context-protocol;aspnetcore;playground;inspector;swagger;ui</PackageTags>
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseExpression>MIT</PackageLicenseExpression>
-        <PackageProjectUrl>https://github.com/alim-tg/mcp-playground</PackageProjectUrl>
-        <RepositoryUrl>https://github.com/alim-tg/mcp-playground</RepositoryUrl>
+        <PackageProjectUrl>https://github.com/alim-tg/dotnet-mcp-playground</PackageProjectUrl>
+        <RepositoryUrl>https://github.com/alim-tg/dotnet-mcp-playground</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PublishRepositoryUrl>true</PublishRepositoryUrl>
         <EmbedUntrackedSources>true</EmbedUntrackedSources>
